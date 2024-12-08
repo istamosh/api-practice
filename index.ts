@@ -6,11 +6,6 @@ const PORT = 8080;
 // using middleware for destructuring JSON
 app.use(express.json());
 
-// basic port listener
-app.listen(PORT, () => {
-  console.log(`It's alive on http://localhost:${PORT}`);
-});
-
 // create a simple GET request handler for http://localhost:${PORT}/tshirt
 // handling incoming data (req), and outgoing data (res)
 app.get("/shoes", (req, res) => {
@@ -25,16 +20,25 @@ app.get("/shoes", (req, res) => {
 
 // simple POST
 app.post("/shoes/:id", (req, res) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-  // Express doesn't destructure JSON by default
-  const { color } = req.body;
+    // Express doesn't destructure JSON by default
+    const { color } = req.body;
 
-  if (!color) {
-    res.status(418).send({ message: "you forgot the color payload!" });
+    if (!color) {
+      res.status(418).send({ message: "you forgot the color payload!" });
+    } else {
+      res.send({
+        shoes: `here is your pair of ${color} shoes 👟👟, with ID: ${id}`,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
   }
+});
 
-  res.send({
-    shoes: `here is your pair of ${color} shoes 👟👟, with ID: ${id}`,
-  });
+// basic port listener
+app.listen(PORT, () => {
+  console.log(`It's alive on http://localhost:${PORT}`);
 });
